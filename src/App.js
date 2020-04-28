@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
+import TablaPaises from './componentes/tablaPaises';
 
-function App() {
-  return (
+class App extends Component {
+
+  state = {
+    paises : []
+  };
+
+  componentDidMount() {
+    this.apiPaises()
+  }
+
+  apiPaises = async () => {
+    try { 
+      const datos = await fetch('https://restcountries.eu/rest/v2/all', {method: 'GET'})
+      const paises = await datos.json()
+      this.setState( { paises : paises } )
+    } catch (err) {
+      alert("Se produjo el siguiente error: " + err)
+      this.setState( { paises : [] } )
+    }
+  }
+
+
+  render() {
+
+    const {paises} = this.state;
+
+    return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <select id>Region</select>
+      <select id>SubRegion</select>
+      <TablaPaises listaPaises = {paises} tituloTabla="Listado de Paises"/>
     </div>
-  );
+    );
+  };
 }
 
 export default App;

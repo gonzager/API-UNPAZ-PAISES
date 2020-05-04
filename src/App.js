@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
 import TablaPaises from './componentes/tablaPaises';
+import Region from './clases/region';
+import ComboRegiones from './componentes/comboRegiones';
 
 class App extends Component {
 
   state = {
-    paises : []
+    paises : [],
+    paisesFiltrado: [],
+    regiones:[]
   };
 
   componentDidMount() {
@@ -16,23 +20,41 @@ class App extends Component {
     try { 
       const datos = await fetch('https://restcountries.eu/rest/v2/all', {method: 'GET'})
       const paises = await datos.json()
-      this.setState( { paises : paises } )
+      const regiones = this.getRegiones( paises )
+      this.setState( { paises : paises, paisesFiltrado: paises, regiones: regiones  } )
     } catch (err) {
       alert("Se produjo el siguiente error: " + err)
-      this.setState( { paises : [] } )
+      this.setState( { paises : [], paisesFiltrado: [], regiones: []  } )
+    }
+  }
+
+  getRegiones = (paises) => {
+    const fnReduce = (regionInstance, each) => regionInstance.addRegion(each);
+    const regiones = paises.reduce( fnReduce, new Region());
+    return regiones.getRegiones()
+  }
+
+  eventoCombo = (e) => {
+    if (e.target.value ==='0') {
+      this.setState( { paisesFiltrado: this.state.paises} )
+    }
+    else {
+      const paisesFiltrado = this.state.paises.filter(
+        p=>p.region === e.target.value
+      )
+      this.setState( { paisesFiltrado: paisesFiltrado} )
     }
   }
 
 
   render() {
 
-    const {paises} = this.state;
+    const {paisesFiltrado, regiones } = this.state;
 
     return (
     <div className="App">
-      <select id>Region</select>
-      <select id>SubRegion</select>
-      <TablaPaises listaPaises = {paises} tituloTabla="Listado de Paises"/>
+      <ComboRegiones regiones= {regiones} handerCombo={this.eventoCombo}/>
+      <TablaPaises listaPaises = {paisesFiltrado} tituloTabla="Listado de Paises"/>
     </div>
     );
   };

@@ -14,7 +14,7 @@ class TablaPaises extends Component {
                     <td>{p.capital}</td>
                     <td>{p.region}</td>
                     <td>{p.subregion}</td>
-                    <td><img src={p.flag} height={35}/></td>
+                    <td><img src={p.flag} height={35}  alt={55}/></td>
                 </tr>
             )
         )

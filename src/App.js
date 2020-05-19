@@ -1,61 +1,52 @@
 import React, { Component } from 'react';
 import './App.css';
-import TablaPaises from './componentes/tablaPaises';
-import Region from './clases/region';
-import ComboRegiones from './componentes/comboRegiones';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+import Paises from './componentes/paises'
+import About from './about'
+import Home from './home'
 
 class App extends Component {
 
-  state = {
-    paises : [],
-    paisesFiltrado: [],
-    regiones:[]
-  };
-
-  componentDidMount() {
-    this.apiPaises()
-  }
-
-  apiPaises = async () => {
-    try { 
-      const datos = await fetch('https://restcountries.eu/rest/v2/all', {method: 'GET'})
-      const paises = await datos.json()
-      const regiones = this.getRegiones( paises )
-      this.setState( { paises : paises, paisesFiltrado: paises, regiones: regiones  } )
-    } catch (err) {
-      alert("Se produjo el siguiente error: " + err)
-      this.setState( { paises : [], paisesFiltrado: [], regiones: []  } )
-    }
-  }
-
-  getRegiones = (paises) => {
-    const fnReduce = (regionInstance, each) => regionInstance.addRegion(each);
-    const regiones = paises.reduce( fnReduce, new Region());
-    return regiones.getRegiones()
-  }
-
-  eventoCombo = (e) => {
-    if (e.target.value ==='0') {
-      this.setState( { paisesFiltrado: this.state.paises} )
-    }
-    else {
-      const paisesFiltrado = this.state.paises.filter(
-        p=>p.region === e.target.value
-      )
-      this.setState( { paisesFiltrado: paisesFiltrado} )
-    }
-  }
-
-
   render() {
 
-    const {paisesFiltrado, regiones } = this.state;
-
+ 
     return (
-    <div className="App">
-      <ComboRegiones regiones= {regiones} handerCombo={this.eventoCombo}/>
-      <TablaPaises listaPaises = {paisesFiltrado} tituloTabla="Listado de Paises"/>
-    </div>
+          <Router>
+          <div>
+            <nav>
+              <ul>
+                <li>
+                  <Link to="/">Home</Link>
+                </li>
+                <li>
+                  <Link to="/about">Acerca de mi</Link>
+                </li>
+                <li>
+                  <Link to="/paises">Paises</Link>
+                </li>
+              </ul>
+            </nav>
+    
+            {/* A <Switch> looks through its children <Route>s and
+                renders the first one that matches the current URL. */}
+            <Switch>
+              <Route path="/paises" exact>
+                <Paises />
+              </Route>
+              <Route path="/" exact >
+                <Home />
+              </Route>
+              <Route path="/about" >
+                <About />
+              </Route>
+            </Switch>
+          </div>
+        </Router>
     );
   };
 }
